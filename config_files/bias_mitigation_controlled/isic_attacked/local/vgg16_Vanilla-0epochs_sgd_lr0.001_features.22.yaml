@@ -1,0 +1,25 @@
+artifact: artificial
+artifact_type: microscope
+attacked_classes:
+- MEL
+batch_size: 12
+checkpoint_dir_corrected: /PATH/TO/checkpoints_corrected
+ckpt_path: /media/pahde/Data/r2r-extended/models/isic_attacked_microscope_v1/vgg16_p_artifact0.2_p_backdoor0_sgd_lr0.001_last.pth
+data_paths:
+- /PATH/TO/ISIC2019
+dataset_name: isic_attacked
+device: cuda
+dir_precomputed_data: /PATH/TO/precomputed_data
+img_size: 224
+lamb: 0.0
+layer_name: features.22
+loss: cross_entropy
+lr: 0.001
+method: Vanilla
+model_name: vgg16
+num_epochs: 0
+optimizer: sgd
+p_artifact: 0.2
+plot_alignment: false
+wandb_api_key: YOUR_WANDB_KEY
+wandb_project_name: r2r-isic-attacked-mitigation

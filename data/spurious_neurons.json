@@ -1,0 +1,78 @@
+{
+    "hyper_kvasir_attacked":{
+        "artificial":{
+            "resnet50d":{
+                "identity_2":[60,499,910]
+            }  
+        }
+    },
+    "isic_attacked":{
+        "artificial":{
+            "resnet50d":{
+                "identity_2":[542,787,979]
+            }  
+        }
+    },
+    "isic": {
+        "band_aid_cl-1":{
+            "resnet50d":{
+                "identity_2": [480,757,994],
+                "last_conv": [1892,1918,1966]
+            }
+        },
+        "gray_hair_cl-1":{
+            "resnet50d":{
+                "identity_2": [29,583,927]
+            }
+        },
+        "ruler_cl-1":{
+            "resnet50d":{
+                "identity_2": [511,542,737,801]
+            }
+        },
+        "ruler_cl-0":{
+            "resnet50d":{
+                "identity_2": [420,511,984]
+            }
+        },
+        "blueish_cl-0":{
+            "resnet50d":{
+                "identity_2": [130,520,690]
+            }
+        },
+        "ruler_cl-4":{
+            "resnet50d":{
+                "identity_2": [420,511,984]
+            }
+        },
+        "reflection_cl-4":{
+            "resnet50d":{
+                "identity_2": [33,104,434]
+            }
+        }
+    },
+    "hyper_kvasir":{
+        "insertion_tube":{
+            "vgg16":{
+                "features.28": [58,216,317]
+            }
+        }
+    },
+    "chexpert_pm": {
+        "pm":{
+            "vgg16":{
+                "features.22": [147,167,183,343,366,418]
+            }
+        }
+    },
+    "chexpert_pm_attacked": {
+        "brightness":{
+            "vgg16":{
+                "features.27": [89,143,237]
+            },
+            "vit":{
+                "inspection_layer": [62,133,259,292,319,328,434,673]
+            }
+        }
+    }
+}

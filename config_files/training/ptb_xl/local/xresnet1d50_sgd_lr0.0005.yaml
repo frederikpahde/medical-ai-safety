@@ -1,0 +1,18 @@
+batch_size: 12
+data_paths:
+- /PATH/TO/PTB-XL/data
+dataset_name: ptb_xl
+device: cuda
+eval_every_n_epochs: 5
+img_size: 224
+loss: binary_cross_entropy
+lr: 0.0005
+milestones: 50,75
+model_name: xresnet1d50
+model_savedir: /PATH/TO/checkpoints
+num_epochs: 100
+optimizer: sgd
+pretrained: false
+store_every_n_epochs: 500
+wandb_api_key: YOUR_WANDB_KEY
+wandb_project_name: ptb-training

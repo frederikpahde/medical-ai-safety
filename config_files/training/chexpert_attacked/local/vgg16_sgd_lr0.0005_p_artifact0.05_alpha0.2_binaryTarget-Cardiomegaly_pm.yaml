@@ -1,0 +1,25 @@
+alpha: 0.2
+artifact_type: white_color
+attacked_classes:
+- 1
+batch_size: 12
+binary_target: Cardiomegaly
+data_paths:
+- /PATH/TO/CheXpert-v1.0-small
+dataset_name: chexpert_pm_attacked
+device: cuda
+epochs: 150
+eval_every_n_epochs: 10
+img_size: 224
+loss: cross_entropy
+lr: 0.0005
+milestones: 80,120
+model_name: vgg16
+model_savedir: /PATH/TO/checkpoints
+num_epochs: 300
+optimizer: sgd
+p_artifact: 0.05
+pretrained: true
+store_every_n_epochs: 500
+wandb_api_key: YOUR_WANDB_KEY
+wandb_project_name: chexpert-attacked-training

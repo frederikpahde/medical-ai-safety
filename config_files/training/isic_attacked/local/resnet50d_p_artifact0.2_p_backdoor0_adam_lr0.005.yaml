@@ -1,0 +1,24 @@
+artifact: artificial
+artifact_type: microscope
+attacked_classes:
+- MEL
+batch_size: 12
+data_paths:
+- /PATH/TO/ISIC2019
+dataset_name: isic_attacked
+device: cuda
+eval_every_n_epochs: 5
+img_size: 224
+loss: cross_entropy
+lr: 0.005
+milestones: 150,250
+model_name: resnet50d
+model_savedir: /PATH/TO/checkpoints
+num_epochs: 300
+optimizer: adam
+p_artifact: 0.2
+p_backdoor: 0
+pretrained: true
+store_every_n_epochs: 100
+wandb_api_key: YOUR_WANDB_KEY
+wandb_project_name: isic-attacked-microscope

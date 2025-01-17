@@ -1,0 +1,26 @@
+artifact: artificial
+artifact_type: ch_time
+attacked_classes:
+- 1
+batch_size: 12
+checkpoint_dir_corrected: /PATH/TO/checkpoints_corrected
+ckpt_path: PATH
+data_paths:
+- /PATH/TO/hyper-kvasir
+dataset_name: hyper_kvasir_attacked
+device: cuda
+dir_precomputed_data: /PATH/TO/precomputed_data
+img_size: 224
+lamb: 0.0
+layer_name: features.20
+loss: cross_entropy
+lr: 0.005
+method: Vanilla
+model_name: vgg16
+num_epochs: 0
+optimizer: sgd
+p_artifact: 0.1
+plot_alignment: false
+time_format: datetime
+wandb_api_key: YOUR_WANDB_KEY
+wandb_project_name: r2r-hyper-kvasir-attacked-mitigation

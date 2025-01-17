@@ -1,0 +1,18 @@
+batch_size: 12
+data_paths:
+- /PATH/TO/hyper-kvasir
+dataset_name: hyper_kvasir
+device: cuda
+eval_every_n_epochs: 30
+img_size: 224
+loss: cross_entropy
+lr: 0.0005
+milestones: 150,250
+model_name: vit_b_16_torchvision
+model_savedir: /PATH/TO/checkpoints
+num_epochs: 300
+optimizer: sgd
+pretrained: true
+store_every_n_epochs: 500
+wandb_api_key: YOUR_WANDB_KEY
+wandb_project_name: hyper-kvasir-training

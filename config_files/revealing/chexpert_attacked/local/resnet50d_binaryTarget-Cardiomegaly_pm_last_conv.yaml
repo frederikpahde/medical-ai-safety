@@ -1,0 +1,20 @@
+alpha: 0.2
+artifact_type: white_color
+attacked_classes:
+- 1
+batch_size: 12
+binary_target: Cardiomegaly
+checkpoint_dir_corrected: /PATH/TO/checkpoints_corrected
+ckpt_path: PATH
+data_paths:
+- /PATH/TO/CheXpert-v1.0-small
+dataset_name: chexpert_pm_attacked
+device: cuda
+dir_precomputed_data: /PATH/TO/precomputed_data
+img_size: 224
+layer_name: last_conv
+method: AClarc
+model_name: resnet50d
+p_artifact: 0.1
+wandb_api_key: YOUR_WANDB_KEY
+wandb_project_name: chexpert-pm-attacked-data-annotation

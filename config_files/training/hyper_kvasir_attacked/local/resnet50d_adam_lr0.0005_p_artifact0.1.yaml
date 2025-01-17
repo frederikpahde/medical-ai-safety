@@ -1,0 +1,23 @@
+artifact_type: ch_time
+attacked_classes:
+- 1
+batch_size: 12
+data_paths:
+- /PATH/TO/hyper-kvasir
+dataset_name: hyper_kvasir_attacked
+device: cuda
+eval_every_n_epochs: 30
+img_size: 224
+loss: cross_entropy
+lr: 0.0005
+milestones: 150,250
+model_name: resnet50d
+model_savedir: /PATH/TO/checkpoints
+num_epochs: 300
+optimizer: adam
+p_artifact: 0.1
+pretrained: true
+store_every_n_epochs: 500
+time_format: datetime
+wandb_api_key: YOUR_WANDB_KEY
+wandb_project_name: hyper-kvasir-attacked-training

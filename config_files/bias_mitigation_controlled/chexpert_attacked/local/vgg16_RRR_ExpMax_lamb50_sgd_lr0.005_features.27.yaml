@@ -1,0 +1,27 @@
+alpha: 0.2
+artifact: artificial
+artifact_type: white_color
+attacked_classes:
+- 1
+batch_size: 12
+binary_target: Cardiomegaly
+checkpoint_dir_corrected: /PATH/TO/checkpoints_corrected
+ckpt_path: /media/pahde/Data/r2r-extended/models/chexpert_attacked_v3/vgg16_sgd_lr0.005_p_artifact0.1_alpha0.2_binaryTarget-Cardiomegaly_pm_last.pth
+data_paths:
+- /PATH/TO/CheXpert-v1.0-small
+dataset_name: chexpert_pm_attacked
+device: cuda
+dir_precomputed_data: /PATH/TO/precomputed_data
+img_size: 224
+lamb: 50.0
+layer_name: features.27
+loss: cross_entropy
+lr: 0.005
+method: RRR_ExpMax
+model_name: vgg16
+num_epochs: 10
+optimizer: sgd
+p_artifact: 0.1
+plot_alignment: false
+wandb_api_key: YOUR_WANDB_KEY
+wandb_project_name: r2r-chexpert-attacked-mitigation

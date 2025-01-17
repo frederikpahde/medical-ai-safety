@@ -1,0 +1,10 @@
+isic2019_dir: /PATH/TO/ISIC2019
+isic2024_dir: /PATH/TO/ISIC2024
+hyper_kvasir_dir: /PATH/TO/hyper-kvasir
+chexpert_dir: /PATH/TO/CheXpert-v1.0-small
+ptb_xl_dir: /PATH/TO/PTB-XL/data
+checkpoint_dir: /PATH/TO/checkpoints
+checkpoint_dir_corrected: /PATH/TO/checkpoints_corrected
+dir_precomputed_data: /PATH/TO/precomputed_data
+local_batch_size: 12
+local_device: cuda

@@ -1,0 +1,42 @@
+{
+    "isic": {
+        "vgg16": ["sgd", 0.001],
+        "resnet50d": ["adam", 0.0005],
+        "efficientnet_b0": ["adam", 0.0005],
+        "vit_b_16_torchvision": ["sgd", 0.005]
+    },
+    "isic_attacked": {
+        "vgg16": ["sgd", 0.001],
+        "resnet50d": ["adam", 0.001],
+        "resnet101d": ["adam", 0.0005],
+        "densenet121": ["sgd", 0.0005],
+        "vit_b_16_torchvision": ["sgd", 0.005]
+    },
+    "hyper_kvasir": {
+        "vgg16": ["sgd", 0.001],
+        "resnet50d": ["adam", 0.0005],
+        "vit_b_16_torchvision": ["sgd", 0.005]
+    },
+    "hyper_kvasir_attacked": {
+        "vgg16": ["sgd", 0.005, 0.1],
+        "resnet50d": ["adam", 0.001, 0.1],
+        "resnet101d": ["adam", 0.001, 0.1],
+        "vit_b_16_torchvision": ["sgd", 0.001, 0.5]
+    },
+    "chexpert": {
+        "vgg16": ["sgd", 0.001],
+        "resnet50d": ["adam", 0.001],
+        "vit_b_16_torchvision": ["sgd", 0.005]
+    },
+    "chexpert_attacked": {
+        "vgg16": ["sgd", 0.005, 0.1, 0.2], 
+        "resnet50d": ["adam", 0.005, 0.1, 0.2],
+        "vit_b_16_torchvision": ["sgd", 0.0005, 0.1, 0.2]
+    },
+    "ptb_xl": {
+        "xresnet1d50": ["adam", 0.0005]
+    },
+    "ptb_xl_attacked": {
+        "xresnet1d50": ["adam", 0.001, 100, 0.5, [1]]
+    }
+}

@@ -1,0 +1,19 @@
+{
+    "isic": {
+        "band_aid": ["vgg16", "features.6"],
+        "ruler": ["resnet50d", "identity_2"],
+        "skin_marker": ["vgg16", "features.22"]
+    },
+    "isic_attacked": {
+        "artificial": ["vgg16", "features.8"]
+    },
+    "hyper_kvasir": {
+        "insertion_tube": ["vgg16", "features.29"]
+    },
+    "hyper_kvasir_attacked": {
+        "artificial": ["vgg16", "features.22"]
+    },
+    "chexpert":{
+        "pm": ["vgg16", "features.22"]
+    }
+}
