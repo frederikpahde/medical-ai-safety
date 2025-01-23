@@ -109,7 +109,7 @@ def run_collect_relevances_and_activations(config, force_recompute):
         layer_names = [n for n, m in model.named_modules() if (isinstance(m, torch.nn.Identity) and 
                                                                ("identity" in n) or "last_conv" in n)]
     elif any([m in model_name for m in TRANSFORMER_MODELS]):
-        layer_names = [l for l in layer_names if (("inspection" in l))]
+        layer_names = ["inspection_layer"]
     else:
         layer_names = [n for n, m in model.named_modules() if isinstance(m, (torch.nn.Identity, torch.nn.Conv2d, torch.nn.ReLU))]
 
@@ -135,13 +135,16 @@ def run_collect_relevances_and_activations(config, force_recompute):
         attr = attribution(data, condition, composite, record_layer=layer_names)
         output.append(attr.prediction.detach().cpu())
 
-        layer_names_ = [l for l in layer_names if l in attr.relevances.keys()]
+        
 
         smpls += [s for s in samples_batch]
         if any([n in model_name for n in MODELS_1D]):
-            acts_max = [attr.activations[layer] for layer in layer_names_]
-            acts_mean = [attr.activations[layer] for layer in layer_names_]
-            rels_batch = [cc.attribute(attr.relevances[layer], abs_norm=True) for layer in layer_names_]
+            lnames = [l for l in layer_names if l in attr.relevances.keys()]
+            acts_max = [attr.activations[layer] for layer in lnames]
+            acts_mean = [attr.activations[layer] for layer in lnames]
+            rels_batch = [cc.attribute(attr.relevances[layer], abs_norm=True) for layer in lnames]
+            rels_max_batch = [attr.relevances[layer] for layer in lnames]
+            rels_mean_batch = [attr.relevances[layer] for layer in lnames]
         else:
             lnames = [lname for lname, acts in attr.activations.items() if acts.dim() == 4]
             rels_batch = [cc.attribute(attr.relevances[layer], abs_norm=True) for layer in lnames]

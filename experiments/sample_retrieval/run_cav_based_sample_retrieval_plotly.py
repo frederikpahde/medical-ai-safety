@@ -17,7 +17,9 @@ import torchvision.transforms as T
 def get_parser():
     parser = ArgumentParser()
     parser.add_argument('--config_file', 
+                        # default="config_files/revealing/chexpert/local/vgg16_binaryTarget-Cardiomegaly_pm_features.22.yaml", 
                         default="config_files/revealing/isic/local/resnet50d_identity_2.yaml", 
+                        # default="config_files/revealing/hyper_kvasir/local/vgg16_features.29.yaml", 
                         type=str)
     parser.add_argument('--artifacts_file', 
                         default="data/artifact_samples/artifact_samples_isic.json", 
@@ -119,7 +121,8 @@ def update_images(top_n, prev_clicks, next_clicks, top_n_state, prev_clicks_stat
                 "justify-content": "space-around", "row-gap": "1em"}
     )
     
-    json_files = glob.glob("data/*.json")
+    # json_files = glob.glob("data/*.json")
+    json_files = glob.glob("data/artifact_samples/*.json")
     default_file = artifacts_file if artifacts_file in json_files else json_files[0]
     default_value = artifact_name_orig
 

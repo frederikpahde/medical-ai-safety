@@ -19,7 +19,7 @@ torch.random.manual_seed(0)
 def get_args():
     parser = ArgumentParser()
     parser.add_argument('--config_file',
-                        default="config_files/bias_mitigation_controlled/hyper_kvasir_attacked/local/resnet50d_RRClarc_lamb1000000_adam_lr0.001_identity_2.yaml")
+                        default="config_files/bias_mitigation_controlled/hyper_kvasir_attacked/local/vit_b_16_torchvision_Vanilla-0epochs_sgd_lr0.001_inspection_layer.yaml")
     parser.add_argument('--before_correction', action="store_true")
 
     args = parser.parse_args()

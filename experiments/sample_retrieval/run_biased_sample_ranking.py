@@ -16,7 +16,6 @@ from utils.cav_utils import get_cav_from_model
 from utils.helper import get_features, get_features_and_relevances, load_config
 import pandas as pd 
 from scipy.stats import kendalltau
-from sklearn.metrics import PrecisionRecallDisplay
 import wandb
 from sklearn.decomposition import NMF
 
@@ -33,7 +32,7 @@ def get_parser():
     parser.add_argument("--fraction", default=1, type=float)
     parser.add_argument("--no_wandb", default=True, type=bool)
     parser.add_argument("--config_file", 
-                        default="config_files/revealing/isic/local/resnet50d_identity_2.yaml")
+                        default="config_files/revealing/chexpert/local/vgg16_binaryTarget-Cardiomegaly_pm_features.22.yaml")
     parser.add_argument('--savedir', default='plot_files/data_annotation/')
     return parser
 
@@ -43,12 +42,9 @@ def main():
     print(f"Run CAV-based artifact ranking for {args.config_file}")
 
     config = load_config(args.config_file)
+
     if args.no_wandb:
         config["wandb_api_key"] = None
-
-    if config.get('wandb_api_key', None):
-        os.environ["WANDB_API_KEY"] = config['wandb_api_key']
-        wandb.init(id=config['config_name'], project=config['wandb_project_name'], resume=True)
 
     if args.artifacts_file is not None:
         config["artifacts_file"] = args.artifacts_file
@@ -66,6 +62,10 @@ def run_cav_artifact_ranking(config, artifact, fraction, batch_size, savedir):
 
     default_device = "cuda" if torch.cuda.is_available() else "cpu"
     device = config.get("device", default_device)
+
+    if config.get('wandb_api_key', None):
+        os.environ["WANDB_API_KEY"] = config['wandb_api_key']
+        wandb.init(id=config['config_name'], project=config['wandb_project_name'], resume=True)
 
     ## Load Data
     dataset = load_dataset(config, normalize_data=True)
@@ -108,9 +108,9 @@ def run_cav_artifact_ranking(config, artifact, fraction, batch_size, savedir):
     #   - report all metrics
 
     for split in [
-        "train",
-        "val",
-        "test",
+        # "train",
+        # "val",
+        # "test",
         "all"    
         ]:
         if split == "test" and EVAL_NEURONS:
