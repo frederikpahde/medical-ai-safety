@@ -63,7 +63,7 @@ kaggle datasets download ashery/chexpert
 
 We further use labels for the existence of `pacemakers`provided by [this work](https://github.com/nina-weng/FastDiME_Med).
 
-For downloading the [HyperKvasir](https://datasets.simula.no/hyper-kvasir/) dataset, run the folloing:
+For downloading the [HyperKvasir](https://datasets.simula.no/hyper-kvasir/) dataset, run the following:
 ```bash
 wget https://datasets.simula.no/downloads/hyper-kvasir/hyper-kvasir-labeled-images.zip
 unzip hyper-kvasir-labeled-images.zip
