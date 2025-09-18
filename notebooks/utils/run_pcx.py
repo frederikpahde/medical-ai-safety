@@ -21,10 +21,10 @@ def run_pcx(features_samples,
     gmm = GaussianMixture(n_components=n_prototypes,
                         random_state=0,
                         covariance_type='full',
-                        max_iter=10,
-                        verbose=2,
+                        max_iter=100,
+                        verbose=1,
                         reg_covar=1e-6,
-                        n_init=1, init_params='kmeans').fit(features)
+                        n_init=3, init_params='kmeans').fit(features)
 
     distances = np.linalg.norm(features[:, None, :] - gmm.means_, axis=2)
     counts = np.unique(distances.argmin(1), return_counts=True)[1]

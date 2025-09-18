@@ -5,19 +5,11 @@ import os
 from tqdm import tqdm
 from crp.concepts import ChannelConcept
 
-def precompute_activations_and_relevances(model, dataset, attribution, composite, split, config):
+def precompute_activations_and_relevances(model, dataset, attribution, composite, split, layer_names, config):
     for class_idx in range(len(dataset.classes)):
-        run_class_specific_preprocessing(model, dataset, class_idx, attribution, composite, split, config)
+        run_class_specific_preprocessing(model, dataset, class_idx, attribution, composite, split, layer_names, config)
 
-def get_layer_names(model, model_name):
-    if ("resnet" in model_name) or ("efficientnet" in model_name):
-        layer_names = [n for n, m in model.named_modules() if (isinstance(m, torch.nn.Identity) and 
-                                                               ("identity" in n) or "last_conv" in n)]
-    else:
-        layer_names = [n for n, m in model.named_modules() if isinstance(m, (torch.nn.Identity, torch.nn.Conv2d, torch.nn.ReLU))]
-    return layer_names
-
-def run_class_specific_preprocessing(model, dataset, class_idx, attribution, composite, split, config):
+def run_class_specific_preprocessing(model, dataset, class_idx, attribution, composite, split, layer_names, config):
     device = "cuda" if torch.cuda.is_available() else "cpu"
 
     splits = {
@@ -35,8 +27,6 @@ def run_class_specific_preprocessing(model, dataset, class_idx, attribution, com
     str_class_id = 'all' if class_idx is None else class_idx
     os.makedirs(path, exist_ok=True)
     path_h5py = f"{path}/class_{str_class_id}_{split}.hdf5"
-
-    layer_names = get_layer_names(model, model_name)
 
     samples = np.array([i for i in range(len(dataset_split)) if ((class_idx is None) or (dataset_split.get_target(i) == class_idx))])
     print(f"Found {len(samples)} samples of class {class_idx}.")

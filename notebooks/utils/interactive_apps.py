@@ -107,7 +107,10 @@ def create_dash_app_data_perspective(samples_2d_pd, ds, percentage_images=0.1):
 
             print(f"Loading {len(selected_ids)} selected images ...")
             image_elements = []
+            filenames = []
+            
             for img_id in tqdm.tqdm(selected_ids):
+                filenames.append(ds.metadata.iloc[img_id].image)
                 img_src = f"data:image/png;base64,{img_to_base64(ds.reverse_normalization(ds[img_id][0]).numpy().transpose(1,2,0).astype(np.uint8))}"
                 image_elements.append(
                     html.Div([
@@ -116,7 +119,14 @@ def create_dash_app_data_perspective(samples_2d_pd, ds, percentage_images=0.1):
                     ], style={'display': 'flex', 'flex-direction': 'column', 'align-items': 'center'})
                 )
 
-            return image_elements 
+            # Create the sample IDs text
+            sample_ids_text = "Selected sample IDs: " + ", ".join(map(str, selected_ids))
+            sample_ids_element = html.Div(sample_ids_text, style={'textAlign': 'left', 'margin-top': '10px'})
+            
+            sample_filenames_text = "Selected filenames: " + ", ".join(filenames)
+            filenames_element = html.Div(sample_filenames_text, style={'textAlign': 'left', 'margin-top': '10px'})
+
+            return image_elements + [sample_ids_element] + [filenames_element]
 
         return html.Div()
     return app

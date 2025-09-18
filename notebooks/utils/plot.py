@@ -33,12 +33,15 @@ def plot_local_explanations(samples, ys, preds, hms, classes, cmap="bwr", level=
     for i, (x, y, pred, hm) in enumerate(zip(samples, ys, preds, hms)):
         img = np.moveaxis(x, 0, 2)
         axs[0, i].imshow(img)
-        axs[0, i].axis("off")
+        axs[0, i].set_xticks([])
+        axs[0, i].set_yticks([])
         axs[0, i].set_title(f"Ground truth: {classes[y.item()]}\nPred.: {classes[pred.item()]}")
 
 
-        axs[1, i].imshow(imgify(hm, vmin=-1, vmax=1, cmap="bwr", level=2))
-        axs[1, i].axis("off")
+        axs[1, i].imshow(imgify(hm, vmin=-1, vmax=1, cmap="bwr", level=level))
+        axs[1, i].set_xticks([])
+        axs[1, i].set_yticks([])
+    
 
 def plot_local_explanations_corrected(samples, ys, preds, preds_corrected, hms, hms_corrected, classes, cmap="bwr", level=1, dpi=100):
     nrows = 3
@@ -49,30 +52,35 @@ def plot_local_explanations_corrected(samples, ys, preds, preds_corrected, hms, 
     for i, (x, y, pred, pred_corrected, hm, hm_corrected) in enumerate(zip(samples, ys, preds, preds_corrected, hms, hms_corrected)):
         img = np.moveaxis(x, 0, 2)
         axs[0, i].imshow(img)
-        axs[0, i].axis("off")
+        axs[0, i].set_xticks([])
+        axs[0, i].set_yticks([])
         axs[0, i].set_title(f"Label: {classes[y.item()]}")
 
 
-        axs[1, i].imshow(imgify(hm, vmin=-1, vmax=1, cmap="bwr", level=2))
+        axs[1, 0].set_ylabel("Original")
+        axs[1, i].imshow(imgify(hm, vmin=-1, vmax=1, cmap="bwr", level=level))
         axs[1, i].set_title(f"Pred.: {classes[pred.item()]}")
-        axs[1, i].axis("off")
+        axs[1, i].set_xticks([])
+        axs[1, i].set_yticks([])
         
-        axs[2, i].imshow(imgify(hm_corrected, vmin=-1, vmax=1, cmap="bwr", level=2))
+        axs[2, 0].set_ylabel("Corrected")
+        axs[2, i].imshow(imgify(hm_corrected, vmin=-1, vmax=1, cmap="bwr", level=level))
         axs[2, i].set_title(f"Pred.: {classes[pred_corrected.item()]}")
-        axs[2, i].axis("off")
+        axs[2, i].set_xticks([])
+        axs[2, i].set_yticks([])
         
 def remove_ticks(ax):
     ax.set_yticks([])
     ax.set_xticks([])
 
 def plot_glocal_explanation(sample, attr, cond_heatmap, n_concepts, n_refimgs, 
-                            topk_ind, topk_rel, ref_imgs, target, pred, y, classes, dpi=120):
+                            topk_ind, topk_rel, ref_imgs, target, pred, y, classes, dpi=120, level=1):
     base_size = 2
     cols = 3
     width_ratios = [1] * (cols-1) + [n_refimgs / 4]
     fig, axs = plt.subplots(n_concepts, cols, gridspec_kw={'width_ratios': width_ratios},
                             figsize=(base_size * cols * 1.1, base_size * n_concepts), dpi=dpi, squeeze=False)
-    level = 2
+    
     resize = T.Resize((150, 150))
     
     # Input Image
@@ -83,7 +91,7 @@ def plot_glocal_explanation(sample, attr, cond_heatmap, n_concepts, n_refimgs,
     # Heatmap (local explanation)
     ax = axs[1][0]
     ax.set_title("heatmap")
-    amax = attr.heatmap.abs().max()
+    amax = attr.heatmap.max()
     img = imgify(attr.heatmap / amax, cmap="bwr", vmin=-1, vmax=1, symmetric=True, level=level)
     ax.imshow(img)
     
@@ -253,7 +261,7 @@ def plot_pcx_matrix(concept_matrix, dataset, prototype_samples, ref_imgs,
 
     for i in range(n_concepts):
         grid = make_grid(
-            [resize(torch.from_numpy(np.asarray(i)).permute((2, 0, 1))) for i in ref_imgs[topk_ind[i]][:num_ref_concept]],
+            [resize(torch.from_numpy(np.copy(np.asarray(i))).permute((2, 0, 1))) for i in ref_imgs[topk_ind[i]][:num_ref_concept]],
             nrow=int(num_ref_concept / 1),
             padding=0)
         grid = np.array(zimage.imgify(grid.detach().cpu()))
