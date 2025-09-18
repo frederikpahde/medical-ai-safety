@@ -109,7 +109,7 @@ class CheXpertPMDataset(BaseDataset):
         return np.arange(len(self))
 
     def get_sample_name(self, i):
-        return self.metadata.iloc[i]["Path"]
+        return self.metadata.iloc[i]["index"]
 
     def get_target(self, i):
         if self.binary_target is not None:
