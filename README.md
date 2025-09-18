@@ -3,6 +3,9 @@
 <h1>Ensuring Medical AI Safety: Explainable AI-Driven Detection and Mitigation of Spurious Model Behavior and Associated Data</h1>
 
 [![Python](https://img.shields.io/badge/python-3.10-blue)](https://www.python.org/) &nbsp;&nbsp; [![PyTorch](https://img.shields.io/badge/PyTorch-1.13-brightgreen)](https://pytorch.org/)
+
+
+**See [notebooks/example_notebook.ipynb](notebooks/example_notebook.ipynb) for an example notebook demonstrating the entire Reveal2Revise life cycle.**
 </div>
 
 ## Description
