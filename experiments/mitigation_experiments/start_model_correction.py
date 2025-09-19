@@ -22,7 +22,6 @@ torch.random.manual_seed(0)
 np.random.seed(0)
 random.seed(0)
 
-
 def get_parser():
     parser = ArgumentParser(
         description='Run bias mitigation experiments.', )
@@ -45,6 +44,10 @@ def start_model_correction(config, num_gpu):
     Args:
         config (dict): Dictionary with config parameters for training.
     """
+
+    logger = logging.getLogger(__name__)
+    logging.basicConfig(format='%(asctime)s - %(message)s', level=logging.INFO)
+
     config_name = config["config_name"]
     logger.info(f"Running {config_name}")
 
@@ -62,11 +65,12 @@ def start_model_correction(config, num_gpu):
     method = config["method"]
     default_device = 'cuda' if torch.cuda.is_available() else 'cpu'
     device = config.get('device', default_device)
-    wandb_project_name = f"{config.get('wandb_project_name', None)}"
+    wandb_project_name = config.get('wandb_project_name', None)
     wandb_api_key = config.get('wandb_api_key', None)
 
     do_wandb_logging = wandb_project_name is not None
 
+    logger_ = None
     # Initialize WandB
     if do_wandb_logging:
         assert wandb_api_key is not None, f"'wandb_api_key' required if 'wandb_project_name' is provided ({wandb_project_name})"
@@ -162,7 +166,8 @@ def start_model_correction(config, num_gpu):
     train_time = timer.time_elapsed("train")
     logger.info(f"Training time: {train_time:.2f} s")
 
-    logger_.log_metrics({"train_time": train_time, "gpu_name": torch.cuda.get_device_name()})
+    if logger_ is not None:
+        logger_.log_metrics({"train_time": train_time, "gpu_name": torch.cuda.get_device_name()})
     
     contains_nans = [n for n, m in model_corrected.named_parameters() if torch.isnan(m).any()]
     assert len(contains_nans) == 0, f"The following params contain NaN values: {contains_nans}"
@@ -174,6 +179,4 @@ def start_model_correction(config, num_gpu):
     logger.info(f"Stored model at {checkpoint_dir_corrected}/{config_name}/last.ckpt")
 
 if __name__ == "__main__":
-    logger = logging.getLogger(__name__)
-    logging.basicConfig(format='%(asctime)s - %(message)s', level=logging.INFO)
     main()

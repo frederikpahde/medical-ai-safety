@@ -93,6 +93,14 @@ def run_class_specific_preprocessing(model, dataset, class_idx, attribution, com
             layer_group.create_dataset("hm", data=data_hms)
     f.close()
     data_outputs = torch.tensor([]) if len(output) == 0 else torch.cat(output)
-    torch.save({"samples": smpls,
-                "output": data_outputs},
-               f"{path}/class_{str_class_id}_{split}_meta.pth")
+    metadata = {
+        "samples": smpls,
+        "samples_train": np.intersect1d(smpls, dataset_split.idxs_train),
+        "samples_val": np.intersect1d(smpls, dataset_split.idxs_val),
+        "samples_test": np.intersect1d(smpls, dataset_split.idxs_test),
+        "idxs_train": np.where([i in dataset_split.idxs_train for i in smpls])[0],
+        "idxs_val": np.where([i in dataset_split.idxs_val for i in smpls])[0],
+        "idxs_test": np.where([i in dataset_split.idxs_test for i in smpls])[0],
+        "output": data_outputs}
+    torch.save(metadata,
+        f"{path}/class_{str_class_id}_{split}_meta.pth")

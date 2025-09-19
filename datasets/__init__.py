@@ -114,6 +114,7 @@ def load_dataset(config, normalize_data=True, hm=False):
         else:
             # specify artifact
             dataset_specific_kwargs["artifact"] = config["artifact"]
+            dataset_specific_kwargs["masks_location"] = config.get("masks_location", "data/")
 
     dataset = get_dataset(dataset_name)(data_paths=data_paths,
                                         normalize_data=normalize_data,

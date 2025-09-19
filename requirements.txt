@@ -1,5 +1,9 @@
+torch
+torchvision
 zennit-crp
+h5py
 timm
+gdown
 pytorch-lightning
 pandas
 opencv-python
@@ -9,3 +13,11 @@ albumentations
 torch-lucent
 captum
 fast-slic
+seaborn
+plotly
+umap-learn
+ipywidgets
+ipykernel
+nbformat
+dash
+corelay[hdbscan]

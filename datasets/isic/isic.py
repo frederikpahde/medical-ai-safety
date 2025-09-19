@@ -95,7 +95,7 @@ class ISICDataset(BaseDataset):
             num_mel = self.metadata['MEL'].sum()
             dist = np.array([len(self.metadata) - num_mel, num_mel])
         else:
-            dist = np.array([float(x) for x in self.metadata.agg(sum).values[1:1 + len(self.classes)]])
+            dist = np.array([float(x) for x in self.metadata.agg("sum").values[1:1 + len(self.classes)]])
 
         self.weights = self.compute_weights(dist)
 

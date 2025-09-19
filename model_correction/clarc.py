@@ -37,7 +37,11 @@ class Clarc(LitClassifier):
         artifact_extension = f"_{artifact_type}-{config['p_artifact']}" if artifact_type else ""
         artifact_extension += f"-{config['lsb_factor']}" if artifact_type == "lsb" else ""
         artifact_extension += "_bd" if config.get("use_backdoor_model", False) else ""
-        self.path = f"{config['dir_precomputed_data']}/global_relevances_and_activations/{self.dataset_name}{artifact_extension}/{self.model_name}"
+        
+        if artifact_type == "red_color":
+            self.path = f"{config['dir_precomputed_data']}/global_relevances_and_activations/isic/{self.model_name}"
+        else:
+            self.path = f"{config['dir_precomputed_data']}/global_relevances_and_activations/{self.dataset_name}{artifact_extension}/{self.model_name}"
 
         cav, mean_length, mean_length_targets = self.compute_cav(self.mode, norm=False)
         
@@ -65,7 +69,7 @@ class Clarc(LitClassifier):
             data = torch.tensor(np.array(h5py.File(path_precomputed_activations)[self.layer_name][mode]))
             
             if len(data) > 0:
-                sample_ids += torch.load(f"{path}/class_{class_id}_all_meta.pth")["samples"]
+                sample_ids += torch.load(f"{path}/class_{class_id}_all_meta.pth", weights_only=False)["samples"]
                 vecs.append(data)
 
         vecs = torch.cat(vecs, 0)

@@ -12,6 +12,7 @@ def get_isic_hm_dataset(data_paths,
                         image_size=224, 
                         artifact_ids_file=None,
                         artifact=None,
+                        masks_location=None,
                         **kwargs):
 
     fns_transform = [
@@ -25,7 +26,8 @@ def get_isic_hm_dataset(data_paths,
     transform = T.Compose(fns_transform)
     
     return ISICHmDataset(data_paths, transform=transform, augmentation=isic_augmentation,
-                         binary_target=binary_target, artifact_ids_file=artifact_ids_file, artifact=artifact)
+                         binary_target=binary_target, artifact_ids_file=artifact_ids_file, artifact=artifact,
+                         masks_location=masks_location)
 
 
 
@@ -36,20 +38,20 @@ class ISICHmDataset(ISICDataset):
                  augmentation=None,
                  binary_target=False,
                  artifact_ids_file=None,
-                 artifact=None
+                 artifact=None,
+                 masks_location=None
                  ):
         super().__init__(data_paths, transform, augmentation, binary_target, artifact_ids_file)
         
-        fname_mask_config = "data/localization_layers.json"
-        with open(fname_mask_config) as f:
-            mask_config = json.load(f)["isic"]
-            
-        self.hm_path = f"data/localizations/hm/isic"
-        artifacts = artifact.split("-")
+        self.hm_path = f"{masks_location}/localized_artifacts/isic"
+        # self.hm_path = f"{masks_location}/localizations/binary/isic"
+        self.artifacts = artifact.split("-")
+        
         artifact_paths = []
-        for artifact in artifacts:
+        for artifact in self.artifacts:
             print("LOADING", artifact)
-            artifact_paths += glob.glob(f"{self.hm_path}/{mask_config[artifact][1]}-svm/{artifact}/*")
+            artifact_paths += glob.glob(f"{self.hm_path}/{artifact}/*")
+            # artifact_paths += glob.glob(f"{self.hm_path}/{mask_config[artifact][1]}-svm/{artifact}/*")
         print(f"Localized artifacts: {len(artifact_paths)}")
         artifact_sample_ids = np.array([int(x.split("/")[-1].split(".")[0]) for x in artifact_paths])
         self.artifact_ids = artifact_sample_ids

@@ -6,8 +6,8 @@ from torch.utils.data import Dataset
 
 
 class BaseDataset(Dataset):
-    def __init__(self, data_paths, transform=None, augmentation=None, artifact_ids_file=None):
-        self.data_paths = data_paths
+    def __init__(self, data_path, transform=None, augmentation=None, artifact_ids_file=None):
+        self.data_path = data_path
         self.transform = transform
         self.augmentation = augmentation
         self.do_augmentation = False
@@ -15,7 +15,6 @@ class BaseDataset(Dataset):
         self.mean = torch.Tensor((0.5, 0.5, 0.5))
         self.var = torch.Tensor((0.5, 0.5, 0.5))
 
-        print(f"Reading artifact IDs from {artifact_ids_file}")
         if artifact_ids_file:
             with open(artifact_ids_file, "r") as file:
                 self.ids_by_artifact = json.load(file)
@@ -51,6 +50,9 @@ class BaseDataset(Dataset):
     def get_subset_by_idxs(self, idxs):
         subset = copy.deepcopy(self)
         idx_map = {idx_old: idx_new for idx_new, idx_old in enumerate(idxs)}
+        subset.idxs_train = np.array([idx_map[i] for i in subset.idxs_train if i in idx_map])
+        subset.idxs_val = np.array([idx_map[i] for i in subset.idxs_val if i in idx_map])
+        subset.idxs_test = np.array([idx_map[i] for i in subset.idxs_test if i in idx_map])
         subset.clean_sample_ids = [idx_map.get(i) for i in subset.clean_sample_ids if i in idx_map.keys()]
         subset.sample_ids_by_artifact = {artifact: [idx_map.get(i) for i in old_idxs if i in idx_map.keys()]
                                          for artifact, old_idxs in subset.sample_ids_by_artifact.items()}

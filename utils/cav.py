@@ -66,7 +66,7 @@ def compute_cav(vecs: np.ndarray, targets: np.ndarray, cav_type: str = "svm"):
         X /= scaler
 
     if "svm" in cav_type:
-        linear = LinearSVC(random_state=0, fit_intercept=True)
+        linear = LinearSVC(random_state=0, fit_intercept=True, dual=True)
         grid_search = GridSearchCV(linear, param_grid={"C": [10 ** i for i in range(-5, 5)]})
         grid_search.fit(X, targets, sample_weight=weights)
         linear = grid_search.best_estimator_

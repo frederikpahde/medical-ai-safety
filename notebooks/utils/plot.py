@@ -277,3 +277,52 @@ def plot_pcx_matrix(concept_matrix, dataset, prototype_samples, ref_imgs,
         plt.savefig(savename, dpi=dpi)
 
     plt.show()   
+    
+def plot_bias_retrieval_results(ds, sample_ids, bias_scores, top_idxs, dpi=75):
+    
+    ncols = min(10, len(top_idxs))
+    nrows = int(np.ceil(len(top_idxs) / ncols))
+
+    size = 2.5
+    fig, axs = plt.subplots(nrows=nrows, ncols=ncols, figsize=(size * ncols, size * nrows), squeeze=False, dpi=dpi)
+
+    for r in range(nrows):
+        for c in range(ncols):
+            title = "Bias score: " if r == 0 and c == 0 else ""
+            ax = axs[r][c]
+            i = r * ncols + c
+            if i < len(top_idxs):
+                sid = sample_ids[top_idxs[i]]
+                title += f"{bias_scores[top_idxs[i]]:.2f}"
+                img = np.moveaxis(ds.reverse_normalization(ds[sid][0]).numpy(), 0, 2)
+                ax.imshow(img)
+                ax.set_title(title)
+                ax.set_xticks([])
+                ax.set_yticks([])
+            else:
+                ax.axis("off")
+    plt.show() 
+    
+def plot_localization(imgs, hms, hms_binary, dpi=75):
+    nrows = 3
+    ncols = len(hms)
+    size = 2
+
+    fig, axs = plt.subplots(nrows=nrows, ncols=ncols, figsize=(size * ncols, size * nrows), squeeze=False, dpi=dpi)
+    for i in range(len(hms)):
+        img = np.moveaxis(imgs[i], 0, 2)
+        axs[0, i].imshow(img)
+        axs[0, i].set_xticks([])
+        axs[0, i].set_yticks([])
+        axs[0, 0].set_ylabel("Input")
+
+        vmax = np.abs(hms[i]).max()
+        axs[1, i].imshow(hms[i], cmap="bwr", vmin=-vmax, vmax=vmax)
+        axs[1, i].set_xticks([])
+        axs[1, i].set_yticks([])
+        axs[1, 0].set_ylabel("Heatmap")
+
+        axs[2, i].imshow(hms_binary[i])
+        axs[2, i].set_xticks([])
+        axs[2, i].set_yticks([])
+        axs[2, 0].set_ylabel("Binarized")

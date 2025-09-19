@@ -21,14 +21,14 @@ def get_parser():
         description='Run CRP preprocessing.', )
 
     parser.add_argument('--variant', default="spectral")
-    parser.add_argument('--split', default="all")
-    parser.add_argument('--class_indices', type=csints, default="0,1,2,3,4,5,6,7")
+    parser.add_argument('--split', default="train")
+    parser.add_argument('--class_indices', type=csints, default="1")
     parser.add_argument('--n_eigval', type=int, default=32)
     parser.add_argument('--n_clusters', type=csints, default=','.join(str(elem) for elem in range(1, 2)))
     parser.add_argument('--n_neighbors', default=32)
     parser.add_argument('--corrected_model', type=bool, default=False)
     parser.add_argument('--config_file',
-                        default="config_files/revealing/isic/local/resnet50d_identity_2.yaml"
+                        default="notebooks/r2r_config_vgg16.json"
                         )
    
 
@@ -47,7 +47,7 @@ def run_spray(config,
               n_eigval, 
               n_clusters, 
               n_neighbors,
-              corrected_model):
+              corrected_model=False):
     
     preprocessing = VARIANTS[variant]['preprocessing']
     distance = VARIANTS[variant]['distance']
@@ -83,7 +83,14 @@ def run_spray(config,
     artifact_extension = f"_{artifact_type}-{p_artifact}" if p_artifact is not None else ""
 
     if corrected_model:
-        path = f"{results_dir}/global_relevances_and_activations/{config['config_name']}"
+        # path = f"{results_dir}/global_relevances_and_activations/{config['config_name']}"
+        path = f"{results_dir}/global_relevances_and_activations/{dataset_name}/{model_name}"
+        extra_part = config['method']
+        if "clarc" in config['method'].lower():
+            extra_part += f"_{config['direction_mode']}"
+        if "lamb" in config:
+            extra_part += f"_{config['lamb']}"
+        path += f"_{extra_part}"
     else:
         path = f"{results_dir}/global_relevances_and_activations/{dataset_name}{artifact_extension}/{model_name}"
         
@@ -93,10 +100,23 @@ def run_spray(config,
     for i, class_index in enumerate(class_indices):
         print(f"Loading class {class_index}")
         data = torch.tensor(np.array(
-            h5py.File(f"{path}/class_{class_index}_{split}.hdf5")[config['layer_name']][mode]
+            h5py.File(f"{path}/class_{class_index}_all.hdf5")[config['layer_name']][mode]
         ))
-        metadata = torch.load(f"{path}/class_{class_index}_{split}_meta.pth")
-        sample_ids = np.array(metadata["samples"])
+        metadata = torch.load(f"{path}/class_{class_index}_all_meta.pth", weights_only=False)
+        sample_ids_by_split = {
+            "all": np.array(metadata["samples"]),
+            "train": np.array(metadata["samples_train"]),
+            "val": np.array(metadata["samples_val"]),
+            "test": np.array(metadata["samples_test"])
+            }
+        sample_ids = sample_ids_by_split[split]
+        if split != "all":
+            idxs = {
+                "train": metadata['idxs_train'],
+                "val": metadata['idxs_val'],
+                "test": metadata['idxs_test']
+                }[split]
+            data = data[idxs]
         train_flag = None
         print(f"Shape of Data: {data.shape}")
         print(f"Computing class {class_index}")
