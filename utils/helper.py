@@ -1,7 +1,10 @@
 import yaml
 import os
-from crp.helper import get_layer_names
 import torch.nn as nn
+
+
+def get_layer_names(model, types):
+    return [name for name, module in model.named_modules() if isinstance(module, tuple(types))]
 
 def none_or_int(value):
   if value.lower() == "none":

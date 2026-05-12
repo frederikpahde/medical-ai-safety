@@ -10,3 +10,4 @@ logs/
 model_checkpoints/
 config_files/training/isic_attacked/rosh_*.yaml
 data/localized_artifacts/celeba
+_backup*

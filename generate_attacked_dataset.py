@@ -156,12 +156,21 @@ class ArtifactGenerator:
             timestamp_text = f"{year}/{month:02d}/{day:02d} {hour:02d}:{minute:02d}"
         
         draw = ImageDraw.Draw(image)
-        font_size = self.kwargs.get('font_size', max(12, min(width, height) // 20))
-        
-        try:
-            font = ImageFont.truetype("/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf", font_size)
-        except (IOError, OSError):
-            font = ImageFont.load_default()
+        font_size = self.kwargs.get('font_size', max(24, min(width, height) // 14))
+
+        _font_paths = [
+            "/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf",           # Debian/Ubuntu
+            "/usr/share/fonts/dejavu/DejaVuSansMono.ttf",                # RHEL/CentOS/HPC
+            "/usr/share/fonts/liberation-sans/LiberationSans-Regular.ttf",
+            "/usr/share/fonts/google-droid/DroidSans.ttf",
+        ]
+        font = ImageFont.load_default()
+        for _p in _font_paths:
+            try:
+                font = ImageFont.truetype(_p, font_size)
+                break
+            except (IOError, OSError):
+                continue
         
         position = self.kwargs.get('position', 'top_left')
         padding = self.kwargs.get('padding', 10)
@@ -181,10 +190,11 @@ class ArtifactGenerator:
         else:
             x, y = padding, padding
         
-        bg_color = self.kwargs.get('bg_color', (0, 0, 0))
+        bg_color = self.kwargs.get('bg_color', None)
         text_color = self.kwargs.get('text_color', (255, 255, 0))
-        
-        draw.rectangle([x - 2, y - 2, x + text_width + 2, y + text_height + 2], fill=bg_color)
+
+        if bg_color is not None:
+            draw.rectangle([x - 2, y - 2, x + text_width + 2, y + text_height + 2], fill=bg_color)
         draw.text((x, y), timestamp_text, font=font, fill=text_color)
         
         mask[y-2:y+text_height+2, x-2:x+text_width+2] = 255
@@ -702,12 +712,12 @@ class AttackedDatasetGenerator:
                         return self.rng.random() < self.p_artifact_to_artifact
             return False
     
-    def generate(self, output_dir: Optional[str] = None) -> Path:
+    def generate(self, output_path) -> Path:
         """
         Generate the attacked dataset.
         
         Args:
-            output_dir: Base output directory (default: same as dataset_path parent)
+            output_path: output directory
             
         Returns:
             Path to the generated attacked dataset
@@ -723,19 +733,8 @@ class AttackedDatasetGenerator:
         
         if len(images) == 0:
             raise ValueError(f"No images found in {self.dataset_path}")
-        
-        output_dir = Path(output_dir)
-        
-        # Create output folder name based on attack mode
-        if self.attack_mode == 'class':
-            p_artifact_percent = int(self.p_artifact * 100)
-            attacked_dir_name = f"{self.artifact_type}-{p_artifact_percent:02d}"
-        else:
-            p_artifact_percent = int(self.p_artifact_to_artifact * 100)
-            attacked_dir_name = f"{self.artifact_type}-on-{self.attacked_artifact}-{p_artifact_percent:02d}"
-        
-        output_path = output_dir / attacked_dir_name
-        
+
+        output_path = Path(output_path)
         print(f"Creating attacked dataset at {output_path}")
         
         # Create output directory structure matching input
@@ -978,9 +977,13 @@ def main():
         seed=args.seed,
         **artifact_kwargs
     )
-    
+    if args.output_dir is None: 
+        print(f"[WARN] No output_dir specified, saving attacked dataset to same location as input dataset with a custom folder name: {args.dataset_path}")
+        output_dir_name = f"{args.artifact_type}-on-{args.attacked_artifact}-{int(args.p_artifact_to_artifact*100):02d}" if args.attacked_artifact else f"{args.artifact_type}-{int(args.p_artifact*100):02d}"
+        output_path =  os.path.join(args.dataset_path, output_dir_name)
+
     # Generate attacked dataset
-    output_path = generator.generate(output_dir=args.output_dir)
+    output_path = generator.generate(output_path=args.output_dir)
     
     print(f"\nDone! Attacked dataset saved to: {output_path}")
 
