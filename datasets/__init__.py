@@ -78,7 +78,6 @@ def get_dataset(dataset_name: str) -> Callable:
     """
     if dataset_name in DATASETS:
         dataset = DATASETS[dataset_name]
-        logger.info(f"Loading {dataset_name}")
         return dataset
     else:
         raise KeyError(f"DATASET {dataset_name} not defined.")
@@ -104,6 +103,7 @@ def load_dataset(config, normalize_data=True, hm=False):
     artifact_ids_file=config.get('artifacts_file', None)
     artifact_kwargs = get_artifact_kwargs(config)
     dataset_specific_kwargs = get_dataset_kwargs(config)
+    logger.info(f"Loading {dataset_name} (data paths: {data_paths} | attacked_classes: {attacked_classes} | p_artifact: {p_artifact} | artifact_type: {artifact_type} | dataset_specific_kwargs: {dataset_specific_kwargs})")
     if hm:
         if "attacked" in dataset_name:
             # specify whether to use GT or predicted masks

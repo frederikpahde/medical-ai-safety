@@ -1,5 +1,6 @@
 from pathlib import Path
-
+import os
+from os.path import basename, dirname, join, exists
 import numpy as np
 import pandas as pd
 import torch
@@ -99,7 +100,21 @@ class ISICDataset(BaseDataset):
 
         self.weights = self.compute_weights(dist)
 
-        self.idxs_train, self.idxs_val, self.idxs_test = self.do_train_val_test_split(.1, .1)
+        # Auto-detect split_ids.json in data dir or parent to enforce fixed splits
+        _split_file = None
+        for _candidate in [Path(data_paths[0]), Path(data_paths[0]).parent]:
+            if (_candidate / 'split_ids.json').exists():
+                _split_file = _candidate / 'split_ids.json'
+                break
+        if _split_file is not None:
+            import json as _json
+            _split_ids = _json.load(open(_split_file))
+            self.idxs_train, self.idxs_val, self.idxs_test = \
+                self.do_train_val_test_split_from_ids(_split_ids["val"], _split_ids["test"])
+            print(f"[ISICDataset] Fixed splits from {_split_file} "
+                  f"(val={len(self.idxs_val)}, test={len(self.idxs_test)})")
+        else:
+            self.idxs_train, self.idxs_val, self.idxs_test = self.do_train_val_test_split(.1, .1)
         self.sample_ids_by_artifact = self.get_sample_ids_by_artifact()
 
         self.all_artifact_sample_ids = [sample_id for _, sample_ids in self.sample_ids_by_artifact.items() for sample_id
@@ -108,8 +123,16 @@ class ISICDataset(BaseDataset):
 
     def construct_metadata(self, dirs_by_version):
         tables = []
-        for version, dir in dirs_by_version.items():
-            data = pd.read_csv(dir / Path(GROUND_TRUTH_FILES_BY_VERSION[version]))
+        for version, data_dir in dirs_by_version.items():
+            # first check if the ground truth file exists in the directory
+            if not (data_dir / Path(GROUND_TRUTH_FILES_BY_VERSION[version])).exists():
+                # check if it exists in the parent directory
+                if not (dirname(data_dir.rstrip('/')) / Path(GROUND_TRUTH_FILES_BY_VERSION[version])).exists():
+                    raise FileNotFoundError(
+                        f"Ground truth file '{GROUND_TRUTH_FILES_BY_VERSION[version]}' not found in '{data_dir}' or its parent directory. Please check the data paths and ensure the ground truth files are in place.")
+                else:
+                    data_dir = dirname(data_dir.rstrip('/'))
+            data = pd.read_csv(data_dir / Path(GROUND_TRUTH_FILES_BY_VERSION[version]))
             data = self.prepare_metadata_by_version(version, data)
             data['version'] = version
             tables.append(data)

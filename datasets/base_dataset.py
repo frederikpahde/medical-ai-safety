@@ -32,6 +32,14 @@ class BaseDataset(Dataset):
 
         return idxs_train, idxs_val, idxs_test
 
+    def do_train_val_test_split_from_ids(self, val_ids, test_ids):
+        all_ids = self.get_all_ids()
+        val_set, test_set = set(val_ids), set(test_ids)
+        idxs_val   = np.array([i for i, id_ in enumerate(all_ids) if id_ in val_set])
+        idxs_test  = np.array([i for i, id_ in enumerate(all_ids) if id_ in test_set])
+        idxs_train = np.array(sorted(set(range(len(all_ids))) - set(idxs_val) - set(idxs_test)))
+        return idxs_train, idxs_val, idxs_test
+
     def get_all_ids(self):
         raise NotImplementedError()
 

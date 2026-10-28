@@ -3,15 +3,32 @@ import gc
 import logging
 import wandb
 import os
+import numpy as np
+from tqdm import tqdm
+import pandas as pd
 
 from experiments.evaluation.compute_metrics import compute_metrics
 
 logger = logging.getLogger(__name__)
 
-def log_results(results, do_wandb_logging, e):
+def log_results(results, do_wandb_logging, e, save_csv_too=None):
+    # beforing printing change numpy to native types and 4 decimal points for easier reading
+    results = {key: (float(f"{val:.4f}") if isinstance(val, (float, np.floating)) else val.tolist() if isinstance(val, torch.Tensor) else val) for key, val in results.items()}
     if do_wandb_logging:
         wandb.log(results, step=e, commit=True)
     logger.info(f"Epoch {e}: {results}")
+
+    if save_csv_too is not None:
+        csv_path = os.path.join(save_csv_too, "training_logs.csv")
+        # also save the training logs to a csv file 
+        row = pd.DataFrame([{"epoch": e, **results}])
+        if os.path.isfile(csv_path):
+            df = pd.read_csv(csv_path)
+            df = pd.concat([df, row], ignore_index=True)
+        else:
+            df = row
+        df.to_csv(csv_path, index=False)
+
 
 def store_model(model, optimizer, e, savename):
     os.makedirs(os.path.dirname(savename), exist_ok=True)
@@ -36,6 +53,7 @@ def train_model(
     model_savedir: str,
     do_wandb_logging: bool,
     start_epoch: int=0,
+    store_best: bool = False,
     percentage_batches: float=1.0,
     compute_per_class_metrics: bool=False
     ):
@@ -60,7 +78,8 @@ def train_model(
         percentage_batches (float): percentage of batches to be used during training
         compute_per_class_metrics (bool): boolean indicating whether metrics are computed for each class
     """
-
+    os.makedirs(model_savedir, exist_ok=True)
+    best_val_metric = -1.0
     # Compute metrics before first iteration
     metrics_epoch = run_one_epoch(model, dl_train, criterion, optimizer, device, update_params=False, 
                                   percentage_batches=percentage_batches, compute_per_class_metrics=compute_per_class_metrics)
@@ -71,7 +90,7 @@ def train_model(
                                     compute_per_class_metrics=compute_per_class_metrics)
         metrics_val = {f"{val_name}_{key}": val for key, val in metrics_val.items()}
         metrics_epoch = {**metrics_epoch, **metrics_val}
-    log_results(metrics_epoch, do_wandb_logging, start_epoch)
+    log_results(metrics_epoch, do_wandb_logging, start_epoch, save_csv_too=model_savedir)
 
     for epoch in range(start_epoch+1, start_epoch+num_epochs+1):
         metrics_epoch = run_one_epoch(model, dl_train, criterion, optimizer, device, update_params=True, 
@@ -84,8 +103,13 @@ def train_model(
                                             compute_per_class_metrics=compute_per_class_metrics)
                 metrics_val = {f"{val_name}_{key}": val for key, val in metrics_val.items()}
                 metrics_epoch = {**metrics_epoch, **metrics_val}
-        
-        log_results(metrics_epoch, do_wandb_logging, epoch)
+
+            if store_best and 'val_accuracy_' in metrics_epoch:
+                if metrics_epoch['val_accuracy_'] > best_val_metric:
+                    best_val_metric = metrics_epoch['val_accuracy_']
+                    store_model(model, optimizer, epoch, f"{model_savedir}/checkpoint_{model_name}_best.pth")
+
+        log_results(metrics_epoch, do_wandb_logging, epoch, save_csv_too=model_savedir)
         
         if epoch % store_every == 0:
             store_model(model, optimizer, epoch, f"{model_savedir}/checkpoint_{model_name}_{epoch}.pth")
@@ -132,11 +156,11 @@ def run_one_epoch(
     model_outs = []
 
     cancel_after = int(len(dl) * percentage_batches)
-    log_every = max(1, len(dl) // 10)
-    logger.info(f"Log every {log_every} batches")
-    for i, (imgs, labels) in enumerate(dl):
-        if i % log_every == 0:
-            logger.info(f"Batch {i+1}/{len(dl)}")
+    log_every = max(1, len(dl)//4)
+    logger.info(f"Log every {log_every} batches") 
+    for i, (imgs, labels) in tqdm(enumerate(dl), 
+                                total=len(dl), miniters=log_every, mininterval=0, maxinterval=float("inf"),
+                                desc="Train" if update_params else "Eval "):
         if i > cancel_after:
             break
         if update_params:

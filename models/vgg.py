@@ -48,6 +48,15 @@ def get_vgg(model_fn, ckpt_path=None, pretrained=True, n_class: int = None, devi
             checkpoint = {k.replace("module.", ""): v for k, v in checkpoint.items()}
         checkpoint = {k.replace("classifier.last", "classifier.6"): v for k, v in checkpoint.items()}  # ISIC MODEL
         model.load_state_dict(checkpoint)
+    # ROSH : if no ckpt_path is given, then set random weights init on all layers
+    elif not pretrained:
+        def weights_init(m):
+            if isinstance(m, torch.nn.Conv2d) or isinstance(m, torch.nn.Linear):
+                torch.nn.init.kaiming_normal_(m.weight)
+                if m.bias is not None:
+                    torch.nn.init.constant_(m.bias, 0)
+        model.apply(weights_init)
+
     model.input_identity = torch.nn.Identity()
     model.forward = forward_modified.__get__(model)
     return model

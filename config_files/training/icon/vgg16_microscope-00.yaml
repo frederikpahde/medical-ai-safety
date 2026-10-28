@@ -1,0 +1,19 @@
+batch_size: 64
+data_paths:
+- ICON_DATASET_PATH/
+dataset_name: isic
+img_size: 224
+loss: cross_entropy
+lr: 0.001
+milestones: 150,250
+model_name: vgg16
+model_savedir: FHHI_MODEL_SAVEDIR/
+num_epochs: 301
+optimizer: sgd
+pretrained: true
+eval_every_n_epochs: 5
+store_best_model: true
+store_every_n_epochs: 300
+device: cuda:0
+# wandb_api_key: YOUR_WANDB_KEY
+# wandb_project_name: isic-real-training

@@ -1,0 +1,13 @@
+*.pyc
+*.json
+*wandb/
+__pycache__/
+.ipynb_checkpoints/
+dataset/*
+*.pth
+*.ckpt
+logs/
+model_checkpoints/
+config_files/training/isic_attacked/rosh_*.yaml
+data/localized_artifacts/celeba
+_backup*

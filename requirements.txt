@@ -1,23 +1,49 @@
+# Install PyTorch separately with the correct CUDA wheel, e.g.:
+#   pip install torch torchvision --index-url https://download.pytorch.org/whl/cu128
+
+# Core scientific
+numpy
+scipy
+pandas
+h5py
+
+# Deep learning
 torch
 torchvision
-zennit-crp
-h5py
-timm
-gdown
 pytorch-lightning
-pandas
-opencv-python
-wandb
-scikit-learn
-albumentations
+timm
+
+# Explainability
+zennit-crp
 torch-lucent
 captum
+
+# Computer vision / data
+opencv-python
+Pillow
+scikit-image
+albumentations
 fast-slic
+gdown
+
+# Machine learning
+scikit-learn
+umap-learn
+corelay[hdbscan]
+
+# Visualization
+matplotlib
 seaborn
 plotly
-umap-learn
+
+# Experiment tracking
+wandb
+
+# Notebook / dashboard support
 ipywidgets
 ipykernel
 nbformat
 dash
-corelay[hdbscan]
+
+# Utilities
+tqdm
